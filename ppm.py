@@ -2,10 +2,22 @@
 from Tkinter import *
 import random
 from collections import deque
+from player import *
+from util import *
+from config import *
 
 #TODO:
-#    1) random 0-9 , not 1-16
-#    2) fix score do not update
+#   -2) define class Util
+#   3) License
+#   4) fix doc
+#   -5) add number system.
+#   -7) play in turn
+#   8) add machine player
+#   -9) notify win
+#   -10) add current player identification
+#   -11) redefine Opertaions class
+#   12) larger GUI.
+#   -13) add a config file
 
 class MainFrame(Frame):
     """
@@ -13,133 +25,137 @@ class MainFrame(Frame):
 
     """
 
-    def makeLEDFrame(self):
+    def make_led_frame(self):
         frame = Frame(master = self)
-        Label(master = frame, text='Current Values').pack(side = TOP)
+        Label(master = frame, text='4-bit LED/next randoms/code digits').pack(side = TOP)
+
+        #4-bit LED
         self.led_selected = StringVar(self, 0)
-        self.led_array = [StringVar(self, '   0') for i in range(4)]
-        for i in range(0, 4):
-            Radiobutton(master = frame, textvariable=self.led_array[i], variable=self.led_selected, value=str(i),
-                                           indicatoron=0)\
+        self.led_four_bits = [StringVar(self, num_to_str(i, NUMBER_SYSTEM)) for i in self.four_bits]
+        for i in range(4):
+            Radiobutton(master = frame, textvariable = self.led_four_bits[i], variable = self.led_selected, value = str(i),
+                                           indicatoron = 0, height = 2, width = 2)\
                 .pack(side=LEFT)
+        
+        #3-bit Random number
+        self.led_rand = [StringVar(self, num_to_str(r, NUMBER_SYSTEM)) for r in self.next_randoms]
+        for r in self.led_rand:
+            Label(master = frame, textvariable = r, fg = 'blue').pack(side = LEFT)
+
+        #2-bit code digit.
+        self.led_code = [StringVar(self, num_to_str(c, NUMBER_SYSTEM)) for c in self.code_digits]
+        for c in self.led_code:
+            Label(master = frame, textvariable = c, fg = 'red').pack(side = LEFT)
         return frame
 
-    def makePlayerFrame(self, title, score, onAdd=None, onReplace=None):
+    def make_player_frame(self, player):
         frame = Frame(master = self)
-        if onAdd==None: onAdd=lambda:None 
-        if onReplace==None: onReplace=lambda:None 
-        Label(master = frame, text = title).pack()
-        Label(master = frame, textvariable = score).pack()
-        Button(master = frame, text = 'add', command = onAdd).pack(side = 'left')
-        Button(master = frame, text = 'replace', command = onReplace).pack(side = 'right')
+        Label(master = frame, text = player.name).pack()
+        Label(master = frame, textvariable = self.current_player_text[player.id]).pack()
+        Label(master = frame, textvariable = self.score_texts[player.id]).pack()
+        Button(master = frame, text = 'add', command = (lambda: self.on_add(player))).pack(side = 'left')
+        Button(master = frame, text = 'replace', command = (lambda: self.on_replace(player))).pack(side = 'right')
+        Button(master = frame, text = 'skip', command = (lambda: self.on_skip(player))).pack(side = 'right')
         return frame
 
-    def initGUI(self):
+    def make_pop_up(self, text = ''):
+        label = Label(master = Toplevel(), text=text, height=0, width=20)
+        label.pack()
+
+    def on_add(self, player):
+        """add clicked"""
+        print 'on add click' + str(player.id)
+        self.update(player, player.add)
+
+    def on_replace(self, player):
+        """replace clicked"""
+        print 'on replace click' + str(player.id)
+        self.update(player, player.replace)
+
+    def on_skip(self, player):
+        print 'on replace click' + str(player.id)
+        self.update(player, player.skip)
+
+    def update(self, player, op, selected = None):
+        if self.players[self.current_player] != player:
+            self.make_pop_up('current player is {}'.format(self.players[self.current_player].name))
+            return
+        #update led
+        if not selected:
+            selected = int(self.led_selected.get())
+        next_random = self.next_randoms[0]
+        if op != player.skip:
+            next_random = self.get_next_random()
+        self.set_led_array(self.next_randoms, self.led_rand)
+        self.four_bits[selected] = op(self.four_bits[selected], next_random)
+        self.set_led_array(self.four_bits, self.led_four_bits)
+        #calculate earn points
+        regular_reward = self.four_bits[selected]
+        adjance = get_adjance(selected, self.four_bits)        
+        code_reward = get_code_reward(selected, self.four_bits, self.code_digits)
+        earn_points = regular_reward * (2 ** adjance)
+        if code_reward == 1:
+            earn_points = earn_points * 8
+        elif code_reward == 2:
+            earn_points = earn_points + self.code_digits[0] * 16 + self.code_digits[1]
+        player.points = player.points + earn_points
+        print 'regular_reward = {}, adjance = {}, code_reward = {} bit(s), earn_points = {}'.format(regular_reward, adjance, code_reward, earn_points)
+        self.next_player()
+        #update plyer score in UI
+        if player.points >= 255:
+            self.make_pop_up('{} wins with {} points'.format(player.name, player.points))
+
+        self.score_texts[player.id].set(num_to_str(player.points, NUMBER_SYSTEM))
+        for p in self.players:
+            if p.id == self.current_player:
+                self.current_player_text[p.id].set('is playing...')
+            else:
+                self.current_player_text[p.id].set('is waiting...')
+
+    def set_led_array(self, vals, led_array):
+        for i in range(len(vals)):
+            led_array[i].set(num_to_str(vals[i], NUMBER_SYSTEM))
+
+
+    def get_next_random(self):
+        next_random=self.next_randoms.popleft()
+        self.next_randoms.append(random.randint(RANDOM_RANGE[0],RANDOM_RANGE[1]))
+        #update UI
+        return next_random
+
+    def next_player(self):
+        if self.current_player + 1 == len(self.players):
+            self.current_player = 0
+        else:
+            self.current_player = self.current_player + 1
+        return self.players[self.current_player]
+
+    def init_gui(self):
         root = Tk()
         root.title('ppm')
         Frame.__init__(self, root)
         #attach ScoreFrame
-        self.makeLEDFrame().pack()
+        self.make_led_frame().pack()
         #attach playFrames
         self.score_texts={}
+        self.current_player_text={}
         for p in self.players:
-            self.score_texts[p.id]=StringVar(self, '  0')
-            self.makePlayerFrame(p.name, self.score_texts[p.id], (lambda: self.onAdd(p)), (lambda: self.onReplace(p))).pack(side = 'left')        
+            self.score_texts[p.id]=StringVar(self, num_to_str(0, NUMBER_SYSTEM))
+            if self.current_player == p.id:
+                self.current_player_text[p.id]=StringVar(self, 'is playing...')
+            else:
+                self.current_player_text[p.id]=StringVar(self, 'is waiting...')            
+            self.make_player_frame(p).pack(side = 'left')        
         self.pack()
 
-    def onAdd(self, player):
-        """add clicked"""
-        print 'on add click' + str(player.id)
-        self.update(player, lambda val,rand: (val+rand) % 16)
-
-    def onReplace(self, player):
-        """replace clicked"""
-        print 'on replace click' + str(player.id)
-        self.update(player, lambda val,rand: rand % 16)
-
-    def update(self, player, op):
-        #update led
-        led_vals=self.getLED()
-        print 'before' + str(led_vals)
-        selected=int(self.led_selected.get())
-        next_random=self.nextRand()
-        led_vals[selected]=op(led_vals[selected], next_random)
-        print 'after' + str(led_vals)
-        self.setLED(led_vals)
-        #calculate eran
-        adjance=getAdjance(selected, led_vals)        
-        print 'adjance='+str(adjance)
-        code_reward=getCodeReward(selected, led_vals, self.code_digits)
-        #print 'code_reward' + str(code_reward)
-        player.score=led_vals[selected] * (2**adjance)
-        if code_reward==1:
-            player.score=player.score * 8
-        else:
-            player.score=led_vals[2] * 16 + led_vals[3]
-        #update plyer score in UI
-        self.score_texts[player.id].set(player.score)
-        print self.score_texts
-
-    def getLED(self):
-        """return LED values[0,1,2,3]"""
-        result=[]
-        for str_num in self.led_array:
-            result.append(str2num(str_num))
-        return result
-
-    def setLED(self, led_vals):
-        for i in range(len(led_vals)):
-            self.led_array[i].set(num2str(led_vals[i]))
-
-    def nextRand(self):
-        next_random=self.next_randoms.popleft()
-        self.next_randoms.append(random.randint(1,16))
-        return next_random
-
     def __init__(self):
-        self.players=[Player(0), Player(1)]
-        self.code_digits=[random.randint(1,16) for i in range(2)]
-        self.next_randoms=deque([random.randint(1,16) for i in range(3)])
-        self.initGUI()
-
-
-
-class Player():
-    """base player class, should be implement by all players"""
-
-    def __init__(self, id, name=None):
-        self.score=0
-        self.id=id
-        self.name=name if name else 'player'+str(id)
-    
-def str2num(str_val, num_sys=10):
-    """formate score, tranlete to num_sys(decimial, hex, ...)"""
-    return int(str_val.get())
-
-def num2str(val):
-    return str(val)
-
-def getAdjance(index, arr):
-    result=0
-    left=index - 1
-    while(left > 0 and arr[left] == arr[index]):
-        left=left - 1
-        result=result + 1
-    
-    right=index + 1
-    while (right < len(arr) and arr[right] == arr[index]):
-        right=right + 1
-        result=result + 1
-
-    return result
-
-def getCodeReward(index, arr, code_digits):    
-    result=0
-    if index < 2:
-        return result
-    if arr[2] == code_digits[0]: result=result + 1    
-    if arr[3] == code_digits[1]: result=result + 1
-    return result
+        self.players = [Player(0), Player(1)]
+        self.current_player = 0
+        self.four_bits = [random.randint(0,15) for i in range(4)]
+        self.code_digits = [random.randint(0,15) for i in range(2)]
+        self.next_randoms = deque([random.randint(RANDOM_RANGE[0],RANDOM_RANGE[1]) for i in range(3)])
+        self.init_gui()
+        print RANDOM_RANGE
 
 def main():
     main_frame=MainFrame()
