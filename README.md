@@ -3,8 +3,9 @@
 ppm game is a game designed for cs2203. This is a software version of ppm to help students have better understanding.  
 
 ### setup.  
-	1) install *python2.7*, see also: https://www.python.org/downloads/
-    2) download source code.
+
+1) install *python2.7*, see also: https://www.python.org/downloads/     
+2) download source code.
     	
 ### Usage.
 
