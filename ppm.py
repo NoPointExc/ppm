@@ -190,7 +190,7 @@ class MainFrame(Frame):
     def __init__(self):
         self.players = [Player(0, PLAYER_NAME[0]), Player(1, PLAYER_NAME[1])]
         self.current_player = 0
-        self.four_bits = [random.randint(0,15) for i in range(4)]
+        self.four_bits = [0 for i in range(4)]
         self.code_digits = [random.randint(0,15) for i in range(2)]
         self.next_randoms = deque([random.randint(RANDOM_RANGE[0],RANDOM_RANGE[1]) for i in range(3)])
         self.init_gui()
