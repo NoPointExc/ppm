@@ -7,6 +7,16 @@ def num_to_str(val, num_sys = 10):
     return result 
 
 def get_adjance(index, arr):
+    """
+    get the adjance number. 
+    
+    Args: 
+        index: for an 4-bit array, indexs are[0, 1, 2, 3]
+        arr: 4-bit int array. 
+
+    """
+
+
     result=0
     left=index - 1
     while(left > 0 and arr[left] == arr[index]):
@@ -21,6 +31,15 @@ def get_adjance(index, arr):
     return result
 
 def get_code_reward(index, arr, code_digits):    
+    """
+    compare arr[2] and arr[3] against with code digits.
+    return code digits number in arr. 
+
+    Args:
+        index: for an 4-bit array, indexs are [0, 1, 2, 3]
+        arr: 4-bt int array.
+        code_digits: 2-bit int array. 
+    """
     result=0
     if index < 2:
         return result
