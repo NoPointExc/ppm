@@ -16,7 +16,6 @@ def get_adjance(index, arr):
 
     """
 
-
     result=0
     left=index - 1
     while(left > 0 and arr[left] == arr[index]):
@@ -40,6 +39,7 @@ def get_code_reward(index, arr, code_digits):
         arr: 4-bt int array.
         code_digits: 2-bit int array. 
     """
+    
     result=0
     if index < 2:
         return result
