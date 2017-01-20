@@ -29,7 +29,7 @@ class MainFrame(Frame):
 	TODO:
 		-2) define class Util
 		-3) License
-		4) fix doc
+		-4) fix doc
 		-5) add number system.
 		-7) play in turn
 		-8) add machine player
@@ -59,7 +59,7 @@ class MainFrame(Frame):
 
         #3-bit Random number
         random_frame = Frame(master = frame)
-        Label(master = random_frame, text='next randoms', fg = 'blue').pack(side = TOP)
+        Label(master = random_frame, text='next random digits', fg = 'blue').pack(side = TOP)
         self.led_rand = [StringVar(self, num_to_str(r, NUMBER_SYSTEM)) for r in self.next_randoms]
         for r in self.led_rand:
             Label(master = random_frame, textvariable = r, fg = 'blue').pack(side = LEFT)
@@ -121,9 +121,9 @@ class MainFrame(Frame):
         #update led
         if not selected:
         	selected = int(self.led_selected.get())
+		next_random = self.get_next_random()
+		self.set_led_array(self.next_randoms, self.led_rand)
         if op != player.skip:
-			next_random = self.get_next_random()
-			self.set_led_array(self.next_randoms, self.led_rand)
 			self.four_bits[selected] = op(self.four_bits[selected], next_random)
 			self.set_led_array(self.four_bits, self.led_four_bits)
 			#calculate earn points
@@ -136,10 +136,11 @@ class MainFrame(Frame):
 			elif code_reward == 2:
 			    earn_points = earn_points + self.code_digits[0] * 16 + self.code_digits[1]
 			player.points = player.points + earn_points
+			if adjance == 0: self.next_player()
 			print 'regular_reward = {}, adjance = {}, code_reward = {} bit(s), earn_points = {}'.format(regular_reward, adjance, code_reward, earn_points)
         else:
-        	print '{} skiped'.format(player.name)
-        self.next_player()
+        	self.next_player()
+        	print '{} skiped'.format(player.name)      	
         #update UI
         if player.points >= 255:
             self.make_pop_up('{} wins with {} points'.format(player.name, player.points))
@@ -185,7 +186,7 @@ class MainFrame(Frame):
             else:
                 self.current_player_text[p.id]=StringVar(self, 'is waiting...')            
             self.make_player_frame(p).pack(side = 'left')        
-        self.pack()
+        self.pack(expand=False)
 
     def __init__(self):
         self.players = [Player(0, PLAYER_NAME[0]), Player(1, PLAYER_NAME[1])]
