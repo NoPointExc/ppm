@@ -16,7 +16,6 @@ class MainFrame(Frame):
     """
     main game interface.
 	
-	DO NOT MODIFY THIS CLASS.
 	1) make a gui and handle GUI call-back.
 	2) calcualte points.
 	3) should be a singleton.
@@ -25,22 +24,6 @@ class MainFrame(Frame):
 		for Unix/Linux/Mac OS
 		$ python2 ppm.py
 		see config.py to see options like number system and plyer name.  
-		
-	TODO:
-		-2) define class Util
-		-3) License
-		4) fix doc
-		-5) add number system.
-		-7) play in turn
-		-8) add machine player
-		-9) notify win
-		-10) add current player identification
-		-11) redefine Opertaions class
-		12) better GUI.
-		-13) add a config file
-		14) python3 compatiable
-		15) scripts to check running environment and start ppm.py
-		16) better logger rather than print
     """
 
     def make_led_frame(self):
