@@ -1,9 +1,5 @@
 def num_to_str(val, num_sys = 10):
-    result = str(val)
-    if num_sys == 2:
-        result = bin(val)
-    elif num_sys == 16:
-        result = hex(val)
+    result = format(val, {2:'b', 10:'d', 16:'x'}[num_sys])
     return result 
 
 def get_adjance(index, arr):
@@ -18,7 +14,7 @@ def get_adjance(index, arr):
 
     result=0
     left=index - 1
-    while(left > 0 and arr[left] == arr[index]):
+    while(left >= 0 and arr[left] == arr[index]):
         left=left - 1
         result=result + 1
     
