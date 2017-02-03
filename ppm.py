@@ -104,8 +104,8 @@ class MainFrame(Frame):
         #update led
         if not selected:
         	selected = int(self.led_selected.get())
-		next_random = self.get_next_random()
-		self.set_led_array(self.next_randoms, self.led_rand)
+	next_random = self.get_next_random()
+	self.set_led_array(self.next_randoms, self.led_rand)
         if op != player.skip:
 			self.four_bits[selected] = op(self.four_bits[selected], next_random)
 			self.set_led_array(self.four_bits, self.led_four_bits)
