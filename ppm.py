@@ -102,8 +102,8 @@ class MainFrame(Frame):
             self.make_pop_up('current player is {}'.format(self.players[self.current_player].name))
             return
         #update led
-        if not selected:
-        	selected = int(self.led_selected.get())
+        if selected == None:
+            selected = int(self.led_selected.get())
 	next_random = self.get_next_random()
 	self.set_led_array(self.next_randoms, self.led_rand)
         if op != player.skip:
