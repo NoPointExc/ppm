@@ -31,7 +31,7 @@ class MainFrame(Frame):
         
         #4-bit LED
         four_bit_frame = Frame(master = frame)
-        Label(master = four_bit_frame, text='4-bit LED').pack(side = TOP)
+        Label(master = four_bit_frame, text='Positional Displays').pack(side = TOP)
         self.led_selected = StringVar(self, 0)
         self.led_four_bits = [StringVar(self, num_to_str(i, NUMBER_SYSTEM)) for i in self.four_bits]
         for i in range(4):
@@ -42,7 +42,7 @@ class MainFrame(Frame):
 
         #3-bit Random number
         random_frame = Frame(master = frame)
-        Label(master = random_frame, text='next random digits', fg = 'blue').pack(side = TOP)
+        Label(master = random_frame, text='Random digits', fg = 'blue').pack(side = TOP)
         self.led_rand = [StringVar(self, num_to_str(r, NUMBER_SYSTEM)) for r in self.next_randoms]
         for r in self.led_rand:
             Label(master = random_frame, textvariable = r, fg = 'blue').pack(side = LEFT)
@@ -51,7 +51,7 @@ class MainFrame(Frame):
         if SHOW_CODE_DIGIT:
 	        #2-bit code digit.
 	        code_digit_frame = Frame(master = frame)
-	        Label(master = code_digit_frame, text='code digits', fg = 'red').pack(side = TOP)
+	        Label(master = code_digit_frame, text='Code digits', fg = 'red').pack(side = TOP)
 	        self.led_code = [StringVar(self, num_to_str(c, NUMBER_SYSTEM)) for c in self.code_digits]
 	        for c in self.led_code:
 	            Label(master = code_digit_frame, textvariable = c, fg = 'red').pack(side = LEFT)
@@ -65,9 +65,9 @@ class MainFrame(Frame):
         Label(master = frame, textvariable = self.current_player_text[player.id]).pack()
         Label(master = frame, textvariable = self.score_texts[player.id]).pack()
         if PLAYER_TYPE[player.id] == 'human':
-        	Button(master = frame, text = 'add', command = (lambda: self.on_add(player))).pack(side = 'left')
-        	Button(master = frame, text = 'replace', command = (lambda: self.on_replace(player))).pack(side = 'right')
-        	Button(master = frame, text = 'skip', command = (lambda: self.on_skip(player))).pack(side = 'right')
+        	Button(master = frame, text = 'Add', command = (lambda: self.on_add(player))).pack(side = 'left')
+        	Button(master = frame, text = 'Replace', command = (lambda: self.on_replace(player))).pack(side = 'right')
+        	Button(master = frame, text = 'Skip', command = (lambda: self.on_skip(player))).pack(side = 'right')
         else:
         	Button(master = frame, text = 'autoplay', command = (lambda: self.on_autoplay(player))).pack()
         return frame
@@ -111,7 +111,7 @@ class MainFrame(Frame):
 			self.set_led_array(self.four_bits, self.led_four_bits)
 			#calculate earn points
 			regular_reward = self.four_bits[selected]
-			adjance = get_adjance(selected, self.four_bits)        
+			adjance = get_adjacency(selected, self.four_bits)        
 			code_reward = get_code_reward(selected, self.four_bits, self.code_digits)
 			earn_points = regular_reward * (2 ** adjance)
 			if code_reward == 1:
@@ -123,7 +123,7 @@ class MainFrame(Frame):
 			print 'regular_reward = {}, adjance = {}, code_reward = {} bit(s), earn_points = {}'.format(regular_reward, adjance, code_reward, earn_points)
         else:
         	self.next_player()
-        	print '{} skiped'.format(player.name)      	
+        	print '{} skipped'.format(player.name)      	
         #update UI
         if player.points >= 255:
             self.make_pop_up('{} wins with {} points'.format(player.name, player.points))
@@ -131,9 +131,9 @@ class MainFrame(Frame):
         self.score_texts[player.id].set(num_to_str(player.points, NUMBER_SYSTEM))
         for p in self.players:
             if p.id == self.current_player:
-                self.current_player_text[p.id].set('is playing...')
+                self.current_player_text[p.id].set('plays now...')
             else:
-                self.current_player_text[p.id].set('is waiting...')
+                self.current_player_text[p.id].set('will play next...')
 
     def set_led_array(self, vals, led_array):
         for i in range(len(vals)):
@@ -165,9 +165,9 @@ class MainFrame(Frame):
         for p in self.players:
             self.score_texts[p.id]=StringVar(self, num_to_str(0, NUMBER_SYSTEM))
             if self.current_player == p.id:
-                self.current_player_text[p.id]=StringVar(self, 'is playing...')
+                self.current_player_text[p.id]=StringVar(self, 'plays now...')
             else:
-                self.current_player_text[p.id]=StringVar(self, 'is waiting...')            
+                self.current_player_text[p.id]=StringVar(self, 'will play next...')            
             self.make_player_frame(p).pack(side = 'left')        
         self.pack(expand=False)
 

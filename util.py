@@ -2,9 +2,9 @@ def num_to_str(val, num_sys = 10):
     result = format(val, {2:'b', 10:'d', 16:'x'}[num_sys])
     return result 
 
-def get_adjance(index, arr):
+def get_adjacency(index, arr):
     """
-    get the adjance number. 
+    get the adjacency( number. 
     
     Args: 
         index: for an 4-bit array, indexs are[0, 1, 2, 3]
