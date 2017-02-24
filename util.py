@@ -4,7 +4,7 @@ def num_to_str(val, num_sys = 10):
 
 def get_adjacency(index, arr):
     """
-    get the adjacency( number. 
+    get the adjacency number. 
     
     Args: 
         index: for an 4-bit array, indexs are[0, 1, 2, 3]
