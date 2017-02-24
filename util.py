@@ -36,9 +36,11 @@ def get_code_reward(index, arr, code_digits):
         code_digits: 2-bit int array. 
     """
     
-    result=0
-    if index < 2:
-        return result
-    if arr[2] == code_digits[0]: result=result + 1    
-    if arr[3] == code_digits[1]: result=result + 1
+    result = 0
+    if (index == 2) and (arr[2] == code_digits[0]):
+        result=result + 1
+        if arr[3] == code_digits[1]: result=result + 1
+    elif (index == 3) and (arr[3] == code_digits[1]):
+        result=result + 1
+        if arr[2] == code_digits[0]: result=result + 1
     return result
