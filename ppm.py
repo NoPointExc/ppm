@@ -110,17 +110,17 @@ class MainFrame(Frame):
 			self.four_bits[selected] = op(self.four_bits[selected], next_random)
 			self.set_led_array(self.four_bits, self.led_four_bits)
 			#calculate earn points
-			regular_reward = self.four_bits[selected]
+			basic_reward = self.four_bits[selected]
 			adjance = get_adjacency(selected, self.four_bits)        
 			code_reward = get_code_reward(selected, self.four_bits, self.code_digits)
-			earn_points = regular_reward * (2 ** adjance)
+			earn_points = basic_reward * (2 ** adjance)
 			if code_reward == 1:
 			    earn_points = earn_points * 8
 			elif code_reward == 2:
 			    earn_points = earn_points + self.code_digits[0] * 16 + self.code_digits[1]
 			player.points = player.points + earn_points
 			if adjance == 0: self.next_player()
-			print 'regular_reward = {}, adjance = {}, code_reward = {} bit(s), earn_points = {}'.format(regular_reward, adjance, code_reward, earn_points)
+			print 'basic_reward = {}, adjance = {}, code_reward = {} bit(s), earn_points = {}'.format(basic_reward, adjance, code_reward, earn_points)
         else:
         	self.next_player()
         	print '{} skipped'.format(player.name)      	
